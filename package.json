@@ -32,6 +32,7 @@
     "expo-web-browser": "~10.0.3",
     "firebase": "^9.6.0",
     "lodash": "^4.17.21",
+    "native-base": "^3.3.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
@@ -41,12 +42,14 @@
     "react-native-reanimated": "~2.2.0",
     "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "~3.8.0",
+    "react-native-svg": "12.1.1",
     "react-native-web": "0.17.1",
     "react-use": "^17.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@types/base-64": "^1.0.0",
+    "@types/lodash": "^4.14.178",
     "@types/react": "~17.0.21",
     "@types/react-native": "~0.64.12",
     "jest-expo": "~43.0.0",

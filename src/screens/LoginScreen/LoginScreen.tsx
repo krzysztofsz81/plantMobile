@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import styles from "./styles";
+import styles from "./LoginScreen.styles";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../../types";
 
-export default function LoginScreen({ navigation }) {
+type ScreenProps = NativeStackScreenProps<RootStackParamList, "Login">;
+
+const LoginScreen: FunctionComponent = () => {
+  const navigation = useNavigation<ScreenProps["navigation"]>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -16,12 +22,13 @@ export default function LoginScreen({ navigation }) {
     const auth = getAuth();
     signInWithEmailAndPassword(auth, email, password)
       .then((response) => {
-        navigation.navigate("Home", {
+        console.log("jazda", {
           user: {
             id: response.user.uid,
             email,
           },
         });
+        navigation.navigate("Home");
       })
       .catch((error) => {
         console.error("problem with signin", error);
@@ -73,4 +80,6 @@ export default function LoginScreen({ navigation }) {
       </KeyboardAwareScrollView>
     </View>
   );
-}
+};
+
+export default LoginScreen;

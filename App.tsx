@@ -1,5 +1,7 @@
 import "react-native-gesture-handler";
-import React, { useEffect, useState } from "react";
+import "./src/firebase/config";
+
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import {
@@ -8,16 +10,13 @@ import {
   RegistrationScreen,
   DeviceScreen,
 } from "./src/screens";
-import { decode, encode } from "base-64";
-import "./src/firebase/config";
-if (!global.btoa) {
-  global.btoa = encode;
-}
-if (!global.atob) {
-  global.atob = decode;
-}
+import { RootStackParamList } from "./types";
 
-const Stack = createStackNavigator();
+// import { decode, encode } from "base-64";
+// if (!global.btoa) global.btoa = encode;
+// if (!global.atob) global.atob = decode;
+
+const RootStack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   // const [loading, setLoading] = useState(true);
@@ -25,12 +24,12 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Device" component={DeviceScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Registration" component={RegistrationScreen} />
-      </Stack.Navigator>
+      <RootStack.Navigator initialRouteName="Home">
+        <RootStack.Screen name="Home" component={HomeScreen} />
+        <RootStack.Screen name="Device" component={DeviceScreen} />
+        <RootStack.Screen name="Login" component={LoginScreen} />
+        <RootStack.Screen name="Registration" component={RegistrationScreen} />
+      </RootStack.Navigator>
     </NavigationContainer>
   );
 }

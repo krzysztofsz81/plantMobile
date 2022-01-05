@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import styles from "./styles";
+import styles from "./RegistrationScreen.styles";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../../types";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-export default function RegistrationScreen({ navigation }) {
+type ScreenProps = NativeStackScreenProps<RootStackParamList, "Registration">;
+
+const RegistrationScreen: FunctionComponent = () => {
+  const navigation = useNavigation<ScreenProps["navigation"]>();
   // const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,13 +28,11 @@ export default function RegistrationScreen({ navigation }) {
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
       .then((response) => {
-        console.log("signed in", response);
-        navigation.navigate("Home", {
-          user: {
-            id: response.user.uid,
-            email,
-          },
+        console.log("signed in", response, {
+          id: response.user.uid,
+          email,
         });
+        navigation.navigate("Home");
       })
       .catch((error) => {
         console.error("problem with signin", error);
@@ -49,14 +53,14 @@ export default function RegistrationScreen({ navigation }) {
           source={require("../../assets/images/icon.png")}
         />
         {/* <TextInput
-          style={styles.input}
-          placeholder="Full Name"
-          placeholderTextColor="#aaaaaa"
-          onChangeText={(text) => setFullName(text)}
-          value={fullName}
-          underlineColorAndroid="transparent"
-          autoCapitalize="none"
-        /> */}
+        style={styles.input}
+        placeholder="Full Name"
+        placeholderTextColor="#aaaaaa"
+        onChangeText={(text) => setFullName(text)}
+        value={fullName}
+        underlineColorAndroid="transparent"
+        autoCapitalize="none"
+      /> */}
         <TextInput
           style={styles.input}
           placeholder="E-mail"
@@ -103,4 +107,6 @@ export default function RegistrationScreen({ navigation }) {
       </KeyboardAwareScrollView>
     </View>
   );
-}
+};
+
+export default RegistrationScreen;
