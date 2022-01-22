@@ -1,14 +1,14 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Button, Text, View } from "react-native";
+import { Button, Text, View } from "native-base";
 import { useNavigation } from "@react-navigation/native";
 
 import { listenOnDevicesList } from "../../api/methods";
 import { DeviceItem } from "../../api/types";
 
-import { ScreenProps } from "./HomeScreen.types";
-import styles from "./HomeScreen.styles";
+import { ScreenProps } from "./DevicesScreen.types";
+import { HomeStackScreenName } from "../../../types";
 
-const HomeScreen: FunctionComponent = () => {
+const DevicesScreen: FunctionComponent = () => {
   const navigation = useNavigation<ScreenProps["navigation"]>();
   const [devices, setDevices] = useState<DeviceItem[]>([]);
 
@@ -20,19 +20,24 @@ const HomeScreen: FunctionComponent = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Devices list</Text>
-      <View style={styles.devicesContainer}>
+    <View>
+      <Text>Devices list</Text>
+      <View>
         {devices.map(({ key, name }) => (
           <Button
             key={key}
-            onPress={() => navigation.navigate("Device", { deviceId: name })}
-            title={name}
-          />
+            onPress={() =>
+              navigation.navigate(HomeStackScreenName.Device, {
+                deviceId: name,
+              })
+            }
+          >
+            {name}
+          </Button>
         ))}
       </View>
     </View>
   );
 };
 
-export default HomeScreen;
+export default DevicesScreen;

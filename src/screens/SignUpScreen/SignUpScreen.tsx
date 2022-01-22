@@ -1,23 +1,22 @@
 import React, { FunctionComponent, useState } from "react";
-import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, Text, Input, View } from "native-base";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import styles from "./RegistrationScreen.styles";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { AuthTabParamList, AuthTabScreenName } from "../../../types";
 import { useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../../../types";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 
-type ScreenProps = NativeStackScreenProps<RootStackParamList, "Registration">;
+type ScreenProps = BottomTabNavigationProp<AuthTabParamList>;
 
-const RegistrationScreen: FunctionComponent = () => {
-  const navigation = useNavigation<ScreenProps["navigation"]>();
+const SignUpScreen: FunctionComponent = () => {
+  const navigation = useNavigation<ScreenProps>();
   // const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const onFooterLinkPress = () => {
-    navigation.navigate("Login");
+  const onLogInPress = () => {
+    navigation.navigate(AuthTabScreenName.SignIn);
   };
 
   const onRegisterPress = () => {
@@ -32,7 +31,6 @@ const RegistrationScreen: FunctionComponent = () => {
           id: response.user.uid,
           email,
         });
-        navigation.navigate("Home");
       })
       .catch((error) => {
         console.error("problem with signin", error);
@@ -43,36 +41,27 @@ const RegistrationScreen: FunctionComponent = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View>
       <KeyboardAwareScrollView
         style={{ flex: 1, width: "100%" }}
         keyboardShouldPersistTaps="always"
       >
-        <Image
-          style={styles.logo}
-          source={require("../../assets/images/icon.png")}
-        />
-        {/* <TextInput
-        style={styles.input}
+        <Image alt="Logo" source={require("../../assets/images/icon.png")} />
+        {/* <Input
         placeholder="Full Name"
-        placeholderTextColor="#aaaaaa"
         onChangeText={(text) => setFullName(text)}
         value={fullName}
         underlineColorAndroid="transparent"
         autoCapitalize="none"
       /> */}
-        <TextInput
-          style={styles.input}
+        <Input
           placeholder="E-mail"
-          placeholderTextColor="#aaaaaa"
           onChangeText={(text) => setEmail(text)}
           value={email}
           underlineColorAndroid="transparent"
           autoCapitalize="none"
         />
-        <TextInput
-          style={styles.input}
-          placeholderTextColor="#aaaaaa"
+        <Input
           secureTextEntry
           placeholder="Password"
           onChangeText={(text) => setPassword(text)}
@@ -80,9 +69,7 @@ const RegistrationScreen: FunctionComponent = () => {
           underlineColorAndroid="transparent"
           autoCapitalize="none"
         />
-        <TextInput
-          style={styles.input}
-          placeholderTextColor="#aaaaaa"
+        <Input
           secureTextEntry
           placeholder="Confirm Password"
           onChangeText={(text) => setConfirmPassword(text)}
@@ -90,18 +77,13 @@ const RegistrationScreen: FunctionComponent = () => {
           underlineColorAndroid="transparent"
           autoCapitalize="none"
         />
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => onRegisterPress()}
-        >
-          <Text style={styles.buttonTitle}>Create account</Text>
-        </TouchableOpacity>
-        <View style={styles.footerView}>
-          <Text style={styles.footerText}>
-            Already got an account?{" "}
-            <Text onPress={onFooterLinkPress} style={styles.footerLink}>
-              Log in
-            </Text>
+        <View>
+          <Text onPress={() => onRegisterPress()}>Create account</Text>
+        </View>
+        <View>
+          <Text>
+            Already got an account?
+            <Text onPress={onLogInPress}>Log in</Text>
           </Text>
         </View>
       </KeyboardAwareScrollView>
@@ -109,4 +91,4 @@ const RegistrationScreen: FunctionComponent = () => {
   );
 };
 
-export default RegistrationScreen;
+export default SignUpScreen;

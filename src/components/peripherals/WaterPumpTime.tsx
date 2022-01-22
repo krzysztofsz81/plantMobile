@@ -4,8 +4,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { Text, Button, TextInput, View, StyleSheet } from "react-native";
-import { getDatabase, ref, set, onValue, get } from "firebase/database";
+import { Text, Input, View } from "native-base";
 import { debounceFunction } from "../../methods";
 import { PeripheralProps } from "../../../types";
 
@@ -38,11 +37,10 @@ const WaterPumpTime: FunctionComponent<PeripheralProps> = ({
     );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.nameText}>Name: {name}</Text>
+    <View>
+      <Text>Name: {name}</Text>
       {dataValue !== null && (
-        <TextInput
-          style={styles.input}
+        <Input
           value={dataValue}
           placeholder="useless placeholder"
           keyboardType="numeric"
@@ -55,31 +53,5 @@ const WaterPumpTime: FunctionComponent<PeripheralProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    margin: 10,
-  },
-  input: {
-    backgroundColor: "green",
-  },
-  button: {
-    backgroundColor: "yellow",
-  },
-  nameText: {
-    color: "#080808",
-    fontSize: 20,
-  },
-  valueText: {
-    color: "#808080",
-    fontSize: 16,
-  },
-  calibrationContainer: {
-    marginTop: 10,
-  },
-  calibrationText: {
-    fontSize: 16,
-  },
-});
 
 export default WaterPumpTime;

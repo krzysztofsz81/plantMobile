@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View } from "native-base";
 import { useRoute } from "@react-navigation/native";
 
 import { listenOnDeviceStatus, listenOnPeripherals } from "../../api/methods";
@@ -7,7 +7,6 @@ import { DeviceStatus, PeripheralItem, Peripherals } from "../../api/types";
 
 import { peripheralComponentMap } from "./DeviceScreen.helpers";
 import { ScreenProps } from "./DeviceScreen.types";
-import styles from "./DeviceScreen.styles";
 
 const DeviceScreen: FunctionComponent = () => {
   const {
@@ -31,16 +30,17 @@ const DeviceScreen: FunctionComponent = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.deviceText}>Device {deviceId} details</Text>
-      <Text style={styles.connectedText}>
-        isConnected: {isConnected ? "Yep" : "Nope"}
-      </Text>
-      <View style={styles.peripheralsContainer}>
+    <View>
+      <Text>Device {deviceId} details</Text>
+      <Text>isConnected: {isConnected ? "Yep" : "Nope"}</Text>
+      <View>
         {peripherals.map(({ key, name, type }) => {
           const Component = peripheralComponentMap[name];
-          if (!Component) return <Text>No peripheral name supported: {name}</Text>
-          return <Component key={key} deviceId={deviceId} name={name} type={type} />;
+          if (!Component)
+            return <Text>No peripheral name supported: {name}</Text>;
+          return (
+            <Component key={key} deviceId={deviceId} name={name} type={type} />
+          );
         })}
       </View>
     </View>

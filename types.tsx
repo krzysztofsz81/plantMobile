@@ -3,41 +3,43 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
-import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import {
-  CompositeScreenProps,
-  NavigatorScreenParams,
-} from "@react-navigation/native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { NavigatorScreenParams } from "@react-navigation/native";
 
-declare global {
-  namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
-  }
+export type HomeStackParamList = {
+  Devices: undefined;
+  Device: { deviceId: string };
+};
+
+export type AuthTabParamList = {
+  SignIn: undefined;
+  SignUp: undefined;
+  ResetPassword: undefined;
+};
+
+export type HomeTabParamList = {
+  Home: NavigatorScreenParams<HomeStackParamList>;
+  Notifications: undefined;
+  Profile: undefined;
+};
+
+export type TabParamList = HomeTabParamList & AuthTabParamList;
+
+export enum AuthTabScreenName {
+  SignIn = "SignIn",
+  SignUp = "SignUp",
+  ResetPassword = "ResetPassword",
 }
 
-export type RootStackParamList = {
-  Home: undefined;
-  Device: { deviceId: string };
-  Login: undefined;
-  Registration: undefined;
-};
+export enum HomeTabScreenName {
+  Home = "Home",
+  Notifications = "Notifications",
+  Profile = "Profile",
+}
 
-export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
-  NativeStackScreenProps<RootStackParamList, Screen>;
-
-export type RootTabParamList = {
-  Home: undefined;
-  Device: undefined;
-  Login: undefined;
-  Registration: undefined;
-};
-
-export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
-  CompositeScreenProps<
-    BottomTabScreenProps<RootTabParamList, Screen>,
-    NativeStackScreenProps<RootStackParamList>
-  >;
+export enum HomeStackScreenName {
+  Devices = "Devices",
+  Device = "Device",
+}
 
 export enum PeripheralType {
   OUTPUT = "OUTPUT",
