@@ -1,12 +1,12 @@
 import 'react-native-gesture-handler';
-import './src/firebase/config';
+import 'react-native-reanimated';
 
-import React, { useEffect, useState } from 'react';
-import { NavigationContainer, NavigationState } from '@react-navigation/native';
+import React from 'react';
+import { NavigationContainer, NavigationState, CommonActions } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { CommonActions } from '@react-navigation/native';
-import { AuthTabScreenName, HomeStackParamList, HomeStackScreenName, HomeTabScreenName, TabParamList } from './types';
+import { createStackNavigator } from '@react-navigation/stack';
+import { Center, NativeBaseProvider, Spinner, useTheme } from 'native-base';
 import {
   DevicesScreen,
   DeviceScreen,
@@ -14,11 +14,11 @@ import {
   ProfileScreen,
   ResetPasswordScreen,
   SignInScreen,
-  SignUpScreen,
+  SignUpScreen
 } from './src/screens';
-import { createStackNavigator } from '@react-navigation/stack';
-import { NativeBaseProvider, useTheme } from 'native-base';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { AuthTabScreenName, HomeStackParamList, HomeStackScreenName, HomeTabScreenName, TabParamList } from './types';
+import AuthProvider, { useAuthContext } from './src/contexts/AuthContext';
+import NotificationProvider from './src/contexts/NotificationContext';
 
 // import { decode, encode } from "base-64";
 // if (!global.btoa) global.btoa = encode;
@@ -36,8 +36,16 @@ function HomeStack() {
   );
 }
 
-function Navigation({ isSignedIn }: { isSignedIn: boolean }) {
+function Main() {
   const { colors } = useTheme();
+  const { authStatus } = useAuthContext();
+
+  if (authStatus === 'LOADING')
+    return (
+      <Center flex="1">
+        <Spinner size="lg" position="absolute" />
+      </Center>
+    );
 
   return (
     <NavigationContainer>
@@ -45,35 +53,25 @@ function Navigation({ isSignedIn }: { isSignedIn: boolean }) {
         activeColor={colors.dark[900]}
         inactiveColor={colors.dark[400]}
         barStyle={{
-          backgroundColor: colors.dark[100],
+          backgroundColor: colors.dark[100]
         }}
       >
-        {isSignedIn ? (
+        {authStatus === 'LOGGED_IN' && (
           <>
-            <Tab.Screen
-              name={HomeTabScreenName.Home}
-              component={HomeStack}
-              options={{
-                tabBarLabel: 'Home',
-                tabBarIcon: ({ color }) => <MaterialCommunityIcons name="home" color={color} size={26} />,
-              }}
-              listeners={({ navigation }) => ({
-                tabPress: () => {
-                  navigation.dispatch((state: NavigationState) =>
-                    CommonActions.reset({
-                      ...state,
-                      index: 0,
-                    })
-                  );
-                },
-              })}
-            />
             <Tab.Screen
               name={HomeTabScreenName.Notifications}
               component={NotificationScreen}
               options={{
                 tabBarLabel: 'Updates',
-                tabBarIcon: ({ color }) => <MaterialCommunityIcons name="bell" color={color} size={26} />,
+                tabBarIcon: ({ color }) => <MaterialCommunityIcons name="bell" color={color} size={26} />
+              }}
+            />
+            <Tab.Screen
+              name={HomeTabScreenName.Home}
+              component={HomeStack}
+              options={{
+                tabBarLabel: 'Home',
+                tabBarIcon: ({ color }) => <MaterialCommunityIcons name="home" color={color} size={26} />
               }}
             />
             <Tab.Screen
@@ -81,18 +79,19 @@ function Navigation({ isSignedIn }: { isSignedIn: boolean }) {
               component={ProfileScreen}
               options={{
                 tabBarLabel: 'Profile',
-                tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" color={color} size={26} />,
+                tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" color={color} size={26} />
               }}
             />
           </>
-        ) : (
+        )}
+        {authStatus === 'NOT_LOGGED_IN' && (
           <>
             <Tab.Screen
               name={AuthTabScreenName.SignIn}
               component={SignInScreen}
               options={{
                 tabBarLabel: 'Sign in',
-                tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" color={color} size={26} />,
+                tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" color={color} size={26} />
               }}
             />
             <Tab.Screen
@@ -100,7 +99,7 @@ function Navigation({ isSignedIn }: { isSignedIn: boolean }) {
               component={SignUpScreen}
               options={{
                 tabBarLabel: 'Sign up',
-                tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" color={color} size={26} />,
+                tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" color={color} size={26} />
               }}
             />
             <Tab.Screen
@@ -108,7 +107,7 @@ function Navigation({ isSignedIn }: { isSignedIn: boolean }) {
               component={ResetPasswordScreen}
               options={{
                 tabBarLabel: 'Reset password',
-                tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" color={color} size={26} />,
+                tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" color={color} size={26} />
               }}
             />
           </>
@@ -119,18 +118,13 @@ function Navigation({ isSignedIn }: { isSignedIn: boolean }) {
 }
 
 export default function App() {
-  const [isSignedIn, setIsSignedIn] = useState(false);
-
-  useEffect(() => {
-    onAuthStateChanged(getAuth(), (user) => {
-      console.log('onAuthStateChanged', { user });
-      setIsSignedIn(!!user);
-    });
-  }, []);
-
   return (
     <NativeBaseProvider config={{ suppressColorAccessibilityWarning: true }}>
-      <Navigation isSignedIn={isSignedIn} />
+      <AuthProvider>
+        <NotificationProvider>
+          <Main />
+        </NotificationProvider>
+      </AuthProvider>
     </NativeBaseProvider>
   );
 }

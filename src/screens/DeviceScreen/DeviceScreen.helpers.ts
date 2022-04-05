@@ -1,16 +1,16 @@
-import { Peripherals } from "../../api/types";
-import {
-  SimpleOutput,
-  SoilMoisture,
-  WaterPump,
-  WaterPumpTime,
-} from "../../components/peripherals";
+import { FunctionComponent } from 'react';
+import WaterPump from '../../components/peripherals/WaterPump';
+import DhtHumidity from '../../components/peripherals/DhtHumidity';
+import SoilMoisture from '../../components/peripherals/SoilMoisture';
+import DhtTemperature from '../../components/peripherals/DhtTemperature';
+import SoilTemperature from '../../components/peripherals/SoilTemperature';
+import { VisiblePeripheral } from '../../api/types';
+import { PeripheralProps } from '../../../types';
 
-export const peripheralComponentMap = {
-  [Peripherals.dht_humidity]: SimpleOutput,
-  [Peripherals.dht_temperature]: SimpleOutput,
-  [Peripherals.soil_temperature]: SimpleOutput,
-  [Peripherals.soil_moisture]: SoilMoisture,
-  [Peripherals.water_pump]: WaterPump,
-  [Peripherals.water_pump_time]: WaterPumpTime,
+export const peripheralComponentMap: Record<VisiblePeripheral, FunctionComponent<PeripheralProps>> = {
+  water_pump: WaterPump,
+  dht_humidity: DhtHumidity,
+  soil_moisture: SoilMoisture,
+  dht_temperature: DhtTemperature,
+  soil_temperature: SoilTemperature
 };

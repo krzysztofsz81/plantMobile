@@ -1,93 +1,130 @@
-import React, { FunctionComponent, useState } from "react";
-import { Image, Text, Input, View } from "native-base";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { AuthTabParamList, AuthTabScreenName } from "../../../types";
-import { useNavigation } from "@react-navigation/native";
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import React, { FunctionComponent, useCallback, useState } from 'react';
+import { Image, Center, Input, Box, Heading, Column, FormControl, Button, Spinner, useToast, ScrollView } from 'native-base';
+import { useAuthContext } from '../../contexts/AuthContext';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
-type ScreenProps = BottomTabNavigationProp<AuthTabParamList>;
+const TOAST_ID = 'SIGN_UP';
+const validationSchema = Yup.object({
+  email: Yup.string().email('E-mail is incorrect').required('E-mail is required'),
+  password: Yup.string().required('Password is required').min(8, 'Password must be at least 8 characters long'),
+  confirmPassword: Yup.string()
+    .required()
+    .oneOf([Yup.ref('password'), null], 'Passwords do not match')
+});
 
 const SignUpScreen: FunctionComponent = () => {
-  const navigation = useNavigation<ScreenProps>();
-  // const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const toast = useToast();
+  const { signup } = useAuthContext();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const onLogInPress = () => {
-    navigation.navigate(AuthTabScreenName.SignIn);
-  };
-
-  const onRegisterPress = () => {
-    if (password !== confirmPassword) {
-      alert("Passwords don't match.");
-      return;
-    }
-    const auth = getAuth();
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((response) => {
-        console.log("signed in", response, {
-          id: response.user.uid,
-          email,
+  const onSignUpPress = useCallback(
+    ({ email, password }) => {
+      if (toast.isActive(TOAST_ID)) toast.close(TOAST_ID);
+      setIsLoading(true);
+      signup(email, password)
+        .then(() => setIsLoading(false))
+        .catch(() => {
+          setIsLoading(false);
+          toast.show({
+            id: TOAST_ID,
+            status: 'error',
+            title: 'Something went wrong.',
+            description: "For some reason registration isn't currently possible."
+          });
         });
-      })
-      .catch((error) => {
-        console.error("problem with signin", error);
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // alert(error);
-      });
-  };
+    },
+    [signup, toast]
+  );
 
   return (
-    <View>
-      <KeyboardAwareScrollView
-        style={{ flex: 1, width: "100%" }}
-        keyboardShouldPersistTaps="always"
-      >
-        <Image alt="Logo" source={require("../../assets/images/icon.png")} />
-        {/* <Input
-        placeholder="Full Name"
-        onChangeText={(text) => setFullName(text)}
-        value={fullName}
-        underlineColorAndroid="transparent"
-        autoCapitalize="none"
-      /> */}
-        <Input
-          placeholder="E-mail"
-          onChangeText={(text) => setEmail(text)}
-          value={email}
-          underlineColorAndroid="transparent"
-          autoCapitalize="none"
+    <ScrollView>
+      <Center px="3" my="20">
+        <Image
+          w="200"
+          h="200"
+          marginBottom="5"
+          alt="Logo"
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          source={require('../../assets/images/plant.png')}
+          opacity={isLoading ? 0.2 : 1}
         />
-        <Input
-          secureTextEntry
-          placeholder="Password"
-          onChangeText={(text) => setPassword(text)}
-          value={password}
-          underlineColorAndroid="transparent"
-          autoCapitalize="none"
-        />
-        <Input
-          secureTextEntry
-          placeholder="Confirm Password"
-          onChangeText={(text) => setConfirmPassword(text)}
-          value={confirmPassword}
-          underlineColorAndroid="transparent"
-          autoCapitalize="none"
-        />
-        <View>
-          <Text onPress={() => onRegisterPress()}>Create account</Text>
-        </View>
-        <View>
-          <Text>
-            Already got an account?
-            <Text onPress={onLogInPress}>Log in</Text>
-          </Text>
-        </View>
-      </KeyboardAwareScrollView>
-    </View>
+        {isLoading && <Spinner size="lg" position="absolute" />}
+        <Box safeArea px="2" py="4" w="90%" maxW="290" opacity={isLoading ? 0.2 : 1}>
+          <Heading
+            size="lg"
+            fontWeight="600"
+            color="coolGray.800"
+            _dark={{
+              color: 'warmGray.50'
+            }}
+          >
+            Welcome
+          </Heading>
+          <Heading
+            mt="1"
+            color="coolGray.600"
+            fontWeight="medium"
+            size="xs"
+            _dark={{
+              color: 'warmGray.200'
+            }}
+          >
+            Sign up to continue!
+          </Heading>
+          <Column space={3} mt="4">
+            <Formik
+              initialValues={{ email: '', password: '', confirmPassword: '' }}
+              validationSchema={validationSchema}
+              onSubmit={onSignUpPress}
+            >
+              {({ handleChange, handleBlur, handleSubmit, errors, touched, values }) => (
+                <>
+                  <FormControl isInvalid={!!touched.email && !!errors.email}>
+                    <FormControl.Label>E-mail</FormControl.Label>
+                    <Input placeholder="E-mail" value={values.email} onBlur={handleBlur('email')} onChangeText={handleChange('email')} />
+                    <FormControl.ErrorMessage mt="0" _text={{ fontSize: 'xs' }}>
+                      {errors.email}
+                    </FormControl.ErrorMessage>
+                  </FormControl>
+
+                  <FormControl isInvalid={!!touched.password && !!errors.password}>
+                    <FormControl.Label>Password</FormControl.Label>
+                    <Input
+                      type="password"
+                      placeholder="Password"
+                      value={values.password}
+                      onBlur={handleBlur('password')}
+                      onChangeText={handleChange('password')}
+                    />
+                    <FormControl.ErrorMessage mt="0" _text={{ fontSize: 'xs' }}>
+                      {errors.password}
+                    </FormControl.ErrorMessage>
+                  </FormControl>
+
+                  <FormControl isInvalid={!!touched.confirmPassword && !!errors.confirmPassword}>
+                    <FormControl.Label>Confirm password</FormControl.Label>
+                    <Input
+                      type="password"
+                      placeholder="Confirm Password"
+                      value={values.confirmPassword}
+                      onBlur={handleBlur('confirmPassword')}
+                      onChangeText={handleChange('confirmPassword')}
+                    />
+                    <FormControl.ErrorMessage mt="0" _text={{ fontSize: 'xs' }}>
+                      {errors.confirmPassword}
+                    </FormControl.ErrorMessage>
+                  </FormControl>
+                  <Button mt="6" colorScheme="indigo" onPress={() => handleSubmit()}>
+                    Sign up
+                  </Button>
+                </>
+              )}
+            </Formik>
+          </Column>
+        </Box>
+      </Center>
+    </ScrollView>
   );
 };
 

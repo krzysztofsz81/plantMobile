@@ -1,4 +1,5 @@
 export { default as SoilMoisture } from './SoilMoisture';
-export { default as SimpleOutput } from './SimpleOutput';
 export { default as WaterPump } from './WaterPump';
-export { default as WaterPumpTime } from './WaterPumpTime';
+export { default as DhtHumidity } from './DhtHumidity';
+export { default as DhtTemperature } from './DhtTemperature';
+export { default as SoilTemperature } from './SoilTemperature';

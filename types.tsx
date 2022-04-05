@@ -3,7 +3,7 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
-import { NavigatorScreenParams } from "@react-navigation/native";
+import { NavigatorScreenParams } from '@react-navigation/native';
 
 export type HomeStackParamList = {
   Devices: undefined;
@@ -25,29 +25,30 @@ export type HomeTabParamList = {
 export type TabParamList = HomeTabParamList & AuthTabParamList;
 
 export enum AuthTabScreenName {
-  SignIn = "SignIn",
-  SignUp = "SignUp",
-  ResetPassword = "ResetPassword",
+  SignIn = 'SignIn',
+  SignUp = 'SignUp',
+  ResetPassword = 'ResetPassword'
 }
 
 export enum HomeTabScreenName {
-  Home = "Home",
-  Notifications = "Notifications",
-  Profile = "Profile",
+  Home = 'Home',
+  Notifications = 'Notifications',
+  Profile = 'Profile'
 }
 
 export enum HomeStackScreenName {
-  Devices = "Devices",
-  Device = "Device",
+  Devices = 'Devices',
+  Device = 'Device'
 }
 
 export enum PeripheralType {
-  OUTPUT = "OUTPUT",
-  INPUT = "INPUT",
+  OUTPUT = 'OUTPUT',
+  INPUT = 'INPUT'
 }
 
 export type PeripheralProps = {
   deviceId: string;
-  name: string;
-  type: PeripheralType;
+  isActive?: boolean;
 };
+
+export type TimelineOption = '1h' | '1d' | '7d';

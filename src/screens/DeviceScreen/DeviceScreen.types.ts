@@ -1,4 +1,4 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../../types";
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { HomeStackParamList } from '../../../types';
 
-export type ScreenProps = NativeStackScreenProps<RootStackParamList, "Device">;
+export type ScreenProps = NativeStackScreenProps<HomeStackParamList, 'Device'>;
